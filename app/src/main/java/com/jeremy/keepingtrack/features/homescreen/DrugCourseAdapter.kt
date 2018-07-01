@@ -11,14 +11,15 @@ import com.jeremy.keepingtrack.data.DrugCourse
 import com.jeremy.keepingtrack.features.scheduledose.HourMinute
 import com.jeremy.keepingtrack.features.scheduledose.HourMinuteComparator
 import kotlinx.android.synthetic.main.row_drug_course.view.*
+import kotlinx.android.synthetic.main.row_planned_dose.view.*
 
 
 class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
 
-    private val dataset: ArrayList<DrugCourseEntry> = ArrayList()
+    private val dataset: ArrayList<List<DrugCourseEntry>> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_drug_course, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_planned_dose, parent, false)
         return CourseViewHolder(view)
     }
 
@@ -39,6 +40,11 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
                 .sortedWith(Comparator { a, b ->
                     HourMinuteComparator.compare(a.time, b.time)
                 })
+                .groupBy {
+                    it.time
+                }
+                .toSortedMap(HourMinuteComparator)
+                .map { it.value }
 
         val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newEntries), true)
         dataset.clear()
@@ -47,9 +53,10 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
     }
 }
 
-private class DrugCourseDiffer(val oldList: List<DrugCourseEntry>, val newList: List<DrugCourseEntry>) : DiffUtil.Callback() {
+private class DrugCourseDiffer(val oldList: List<List<DrugCourseEntry>>, val newList: List<List<DrugCourseEntry>>) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        return oldList[oldItemPosition].count() == newList[newItemPosition].count()
+             && oldList[oldItemPosition].first() == newList[newItemPosition].first()
     }
 
     override fun getOldListSize(): Int {
@@ -61,16 +68,32 @@ private class DrugCourseDiffer(val oldList: List<DrugCourseEntry>, val newList: 
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        val oldEntry = oldList[oldItemPosition]
+        val newEntry = newList[newItemPosition]
+        if (oldEntry.count() != newEntry.count()) {
+            return false
+        }
+        for (i in 0 until oldEntry.count()) {
+            if (oldEntry[i] != newEntry[i]) {
+                return false
+            }
+        }
+        return true
     }
 }
 
-class CourseViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-    fun setData(course: DrugCourseEntry) {
-        itemView.readout_name.text = course.name
-        itemView.readout_dose.text = FormatUtils.formatDose(course.dose)
-        itemView.readout_time.text = FormatUtils.formatHourMinute(course.time)
-        itemView.readout_icon.setBackgroundColor(course.color)
+class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    fun setData(courses: List<DrugCourseEntry>) {
+        itemView.readout_time.text = FormatUtils.formatHourMinute(courses.first().time)
+        val container = itemView.readout_drugCourses.apply { removeAllViews() }
+        val inflater = LayoutInflater.from(itemView.context)
+        for (course in courses) {
+            val view = inflater.inflate(R.layout.row_drug_course, container, false)
+            view.readout_name.text = course.name
+            view.readout_dose.text = FormatUtils.formatDose(course.dose)
+            view.readout_icon.setBackgroundColor(course.color)
+            container.addView(view)
+        }
     }
 }
 

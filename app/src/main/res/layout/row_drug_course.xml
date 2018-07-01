@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_medium"
         app:layout_constraintLeft_toRightOf="@id/readout_icon"
-        app:layout_constraintRight_toLeftOf="@+id/readout_time"
+        app:layout_constraintRight_toLeftOf="@+id/button_checked"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0"
         tools:text="Name" />
@@ -38,12 +38,13 @@
         app:layout_constraintTop_toBottomOf="@id/readout_name"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <TextView
-        android:id="@+id/readout_time"
+    <!-- todo: optional checkmake -->
+    <ImageButton
+        android:id="@+id/button_checked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
-        tools:text="16:00"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
