@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.data.DrugCourse
 import com.jeremy.keepingtrack.data.Repository
-import com.jeremy.keepingtrack.data.SharedPreferencesRespository
+import com.jeremy.keepingtrack.data.SharedPreferencesRepository
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
 import kotlinx.android.synthetic.main.activity_schedule.*
 import java.util.*
@@ -27,7 +27,7 @@ class ScheduleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
-        repository = SharedPreferencesRespository(this)
+        repository = SharedPreferencesRepository(this)
 
         adapter = ScheduledTimingsAdapter()
         readout_times.adapter = adapter
@@ -82,8 +82,12 @@ class ScheduleActivity : AppCompatActivity() {
                 Toast.makeText(this, "please add at least one time", Toast.LENGTH_SHORT).show()
             }
             else -> {
-                repository.saveDrugCourse(DrugCourse(name, dosage, color, hourMinutes, listOf(1, 2, 3, 4, 5, 6, 7)))
-                onBackPressed()
+                val saved = repository.saveDrugCourse(DrugCourse(name, dosage, color, hourMinutes, listOf(1, 2, 3, 4, 5, 6, 7)))
+                if (saved) {
+                    onBackPressed()
+                } else {
+                    Toast.makeText(this, "couldn't save - maybe this already exists?", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

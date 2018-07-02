@@ -12,31 +12,41 @@ import java.io.Serializable
 import java.util.*
 
 interface Repository {
-    fun saveDrugCourse(course: DrugCourse)
-    fun loadAllDrugCourses(): List<DrugCourse>
+    fun saveDrugCourse(course: DrugCourse): Boolean
+    fun getAllDrugCourses(): List<DrugCourse>
     fun clearAllSavedCourses()
 }
 
 private const val SHARED_PREF_NAME = "PREFERENCES"
 private const val KEY_COURSES = "COURSES"
 
-class SharedPreferencesRespository(val context: Context) : Repository {
+class SharedPreferencesRepository(private val context: Context) : Repository {
 
     private var sharedPreferences: SharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
     private var gson: Gson = Gson()
+    private var cachedCourses: List<DrugCourse> = Collections.emptyList()
 
-    override fun saveDrugCourse(course: DrugCourse) {
+    override fun saveDrugCourse(course: DrugCourse): Boolean {
         val jsonedEntry = gson.toJson(course)
         val jsonedSet = HashSet(sharedPreferences.getStringSet(KEY_COURSES, HashSet<String>()))
-        jsonedSet.add(jsonedEntry)
-
-        Timber.d("new entry: $jsonedEntry")
-        Timber.d("new data: $jsonedSet")
-
-        sharedPreferences.edit().putStringSet(KEY_COURSES, jsonedSet).apply()
+        val wasAdded = jsonedSet.add(jsonedEntry)
+        return if (wasAdded) {
+            cachedCourses = ArrayList(getAllDrugCourses()).apply { add(course) }
+            sharedPreferences.edit().putStringSet(KEY_COURSES, jsonedSet).apply()
+            true
+        } else {
+            false
+        }
     }
 
-    override fun loadAllDrugCourses(): List<DrugCourse> {
+    override fun getAllDrugCourses(): List<DrugCourse> {
+        if (cachedCourses.isEmpty()) {
+            cachedCourses = loadAllDrugCourses()
+        }
+        return cachedCourses
+    }
+
+    private fun loadAllDrugCourses(): List<DrugCourse> {
         val values = sharedPreferences.getStringSet(KEY_COURSES, HashSet<String>())
         val jsonedList = ArrayList(values)
 

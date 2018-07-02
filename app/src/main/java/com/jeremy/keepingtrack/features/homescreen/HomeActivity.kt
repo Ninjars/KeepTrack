@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.data.Repository
-import com.jeremy.keepingtrack.data.SharedPreferencesRespository
+import com.jeremy.keepingtrack.data.SharedPreferencesRepository
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -23,7 +23,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        repository = SharedPreferencesRespository(this)
+        repository = SharedPreferencesRepository(this)
         courseAdapter = DrugCourseAdapter()
         readout_courses.adapter = courseAdapter
 
@@ -50,6 +50,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        courseAdapter.updateData(repository.loadAllDrugCourses())
+        courseAdapter.updateData(repository.getAllDrugCourses())
     }
 }
