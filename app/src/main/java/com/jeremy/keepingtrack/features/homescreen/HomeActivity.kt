@@ -23,7 +23,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        repository = SharedPreferencesRepository(this)
+        repository = Environment.repository
         courseAdapter = DrugCourseAdapter()
         readout_courses.adapter = courseAdapter
 

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.data.DrugCourse
 import com.jeremy.keepingtrack.data.HourMinute
@@ -28,7 +29,7 @@ class ScheduleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
-        repository = SharedPreferencesRepository(this)
+        repository = Environment.repository
 
         adapter = ScheduledTimingsAdapter()
         readout_times.adapter = adapter
