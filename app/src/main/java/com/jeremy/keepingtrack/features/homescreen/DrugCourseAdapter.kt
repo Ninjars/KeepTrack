@@ -32,7 +32,7 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
         holder.setData(dataset[position])
     }
 
-    fun updateData(newDataset: List<DrugCourse>) {
+    fun updateData(hourMinute: HourMinute, newDataset: List<DrugCourse>) {
         // TODO: handle days of week
         val newEntries = newDataset
                 .flatMap { drugCourse ->
@@ -44,12 +44,25 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
                 .groupBy {
                     it.time
                 }
-                .toSortedMap(HourMinuteComparator)
+                .toSortedMap(HourMinuteOffsetComparator(hourMinute))
                 .map { it.value }
 
         val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newEntries), true)
         dataset.clear()
         dataset.addAll(newEntries)
+        changes.dispatchUpdatesTo(this)
+    }
+
+    fun updateCurrentTime(hourMinute: HourMinute) {
+        val sortedData = ArrayList(dataset)
+                .groupBy {
+                    it.first().time
+                }
+                .toSortedMap(HourMinuteOffsetComparator(hourMinute))
+                .flatMap { it.value }
+        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, sortedData), true)
+        dataset.clear()
+        dataset.addAll(sortedData)
         changes.dispatchUpdatesTo(this)
     }
 }

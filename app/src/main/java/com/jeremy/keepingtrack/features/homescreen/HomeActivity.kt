@@ -5,18 +5,25 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
+import com.jeremy.keepingtrack.TimeUtils
 import com.jeremy.keepingtrack.data.Repository
-import com.jeremy.keepingtrack.data.SharedPreferencesRepository
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.concurrent.TimeUnit
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var repository: Repository
 
     private lateinit var courseAdapter: DrugCourseAdapter
+
+    private lateinit var updateDisposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +57,23 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        courseAdapter.updateData(repository.getAllDrugCourses())
+        val hourMinute = TimeUtils.nowToHourMinute()
+        courseAdapter.updateData(hourMinute, repository.getAllDrugCourses())
+        updateDisposable = Observable.interval(30, TimeUnit.SECONDS)
+                .timeInterval()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { refreshNextDose() }
     }
+
+    override fun onPause() {
+        updateDisposable.dispose()
+        super.onPause()
+    }
+
+    private fun refreshNextDose() {
+        val hourMinute = TimeUtils.nowToHourMinute()
+        courseAdapter.updateCurrentTime(hourMinute)
+        // TODO: how to show on ui?
+    }
+
 }
