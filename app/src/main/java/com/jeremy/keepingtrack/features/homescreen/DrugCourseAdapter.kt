@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import com.jeremy.keepingtrack.FormatUtils
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.data.DrugCourse
-import com.jeremy.keepingtrack.features.scheduledose.HourMinute
-import com.jeremy.keepingtrack.features.scheduledose.HourMinuteComparator
+import com.jeremy.keepingtrack.data.HourMinute
+import com.jeremy.keepingtrack.data.HourMinuteComparator
+import com.jeremy.keepingtrack.data.HourMinuteOffsetComparator
 import kotlinx.android.synthetic.main.row_drug_course.view.*
 import kotlinx.android.synthetic.main.row_planned_dose.view.*
 

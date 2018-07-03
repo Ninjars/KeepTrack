@@ -1,6 +1,6 @@
 package com.jeremy.keepingtrack
 
-import com.jeremy.keepingtrack.features.scheduledose.HourMinute
+import com.jeremy.keepingtrack.data.HourMinute
 import java.text.DecimalFormat
 
 object FormatUtils {

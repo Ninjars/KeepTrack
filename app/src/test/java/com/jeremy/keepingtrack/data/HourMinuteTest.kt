@@ -1,8 +1,7 @@
-package com.jeremy.keepingtrack.features.scheduledose
+package com.jeremy.keepingtrack.data
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class HourMinuteTest {
 

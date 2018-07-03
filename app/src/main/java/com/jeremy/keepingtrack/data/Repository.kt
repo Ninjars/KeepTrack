@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.jeremy.keepingtrack.features.scheduledose.HourMinute
 import timber.log.Timber
 import java.io.Serializable
 import java.util.*

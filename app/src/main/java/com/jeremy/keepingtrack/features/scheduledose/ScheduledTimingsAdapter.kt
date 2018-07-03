@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.jeremy.keepingtrack.FormatUtils
 import com.jeremy.keepingtrack.R
+import com.jeremy.keepingtrack.data.HourMinute
+import com.jeremy.keepingtrack.data.HourMinuteComparator
 import kotlinx.android.synthetic.main.row_schedule_time.view.*
 
 class ScheduledTimingsAdapter : RecyclerView.Adapter<TimingsViewHolder>() {
