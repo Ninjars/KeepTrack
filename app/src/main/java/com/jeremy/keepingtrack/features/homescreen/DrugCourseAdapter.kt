@@ -111,4 +111,4 @@ class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-data class DrugCourseEntry(val name: String, val dose: Float, val color: Int, val time: HourMinute)
+data class DrugCourseEntry(val course: DrugCourse, val time: HourMinute)

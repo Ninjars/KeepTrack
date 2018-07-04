@@ -8,7 +8,7 @@ import android.view.MenuItem
 import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.TimeUtils
-import com.jeremy.keepingtrack.data.Repository
+import com.jeremy.keepingtrack.data.repository.Repository
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

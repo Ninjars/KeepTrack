@@ -1,7 +1,9 @@
-package com.jeremy.keepingtrack.data
+package com.jeremy.keepingtrack.data.repository
 
+import com.jeremy.keepingtrack.data.DrugCourse
+import com.jeremy.keepingtrack.data.HourMinute
+import com.jeremy.keepingtrack.data.ScheduledSlot
 import io.reactivex.Observable
-import java.io.Serializable
 
 interface Repository {
     fun saveDrugCourse(course: DrugCourse): Boolean
@@ -11,7 +13,3 @@ interface Repository {
     fun getTimesForCourse(course: DrugCourse): Observable<List<HourMinute>>
     fun clearAllSavedCourses()
 }
-
-data class DrugCourse(val name: String, val dose: Float, val color: Int, val times: List<HourMinute>) : Serializable
-
-data class ScheduledSlot(val time: HourMinute, val courses: List<DrugCourse>)

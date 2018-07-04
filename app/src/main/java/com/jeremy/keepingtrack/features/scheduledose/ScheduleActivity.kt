@@ -9,8 +9,7 @@ import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.data.DrugCourse
 import com.jeremy.keepingtrack.data.HourMinute
-import com.jeremy.keepingtrack.data.Repository
-import com.jeremy.keepingtrack.data.SharedPreferencesRepository
+import com.jeremy.keepingtrack.data.repository.Repository
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
 import kotlinx.android.synthetic.main.activity_schedule.*
 import java.util.*

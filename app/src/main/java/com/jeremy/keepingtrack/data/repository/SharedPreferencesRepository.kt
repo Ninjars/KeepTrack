@@ -1,4 +1,4 @@
-package com.jeremy.keepingtrack.data
+package com.jeremy.keepingtrack.data.repository
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -6,6 +6,9 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.jeremy.keepingtrack.data.DrugCourse
+import com.jeremy.keepingtrack.data.HourMinute
+import com.jeremy.keepingtrack.data.ScheduledSlot
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
