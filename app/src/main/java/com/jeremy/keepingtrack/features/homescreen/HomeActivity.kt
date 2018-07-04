@@ -12,7 +12,7 @@ import com.jeremy.keepingtrack.data.repository.Repository
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.TimeUnit
@@ -23,7 +23,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var courseAdapter: DrugCourseAdapter
 
-    private lateinit var updateDisposable: Disposable
+    private val disposables: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,22 +57,26 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val hourMinute = TimeUtils.nowToHourMinute()
-        courseAdapter.updateData(hourMinute, repository.getAllDrugCourses())
-        updateDisposable = Observable.interval(30, TimeUnit.SECONDS)
+        disposables.add(repository.getAllDrugCourses()
+                .subscribe {
+                    courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
+                })
+
+        disposables.add(Observable.interval(30, TimeUnit.SECONDS)
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { refreshNextDose() }
+                .subscribe { refreshNextDose() })
     }
 
     override fun onPause() {
-        updateDisposable.dispose()
+        disposables.clear()
         super.onPause()
     }
 
     private fun refreshNextDose() {
         val hourMinute = TimeUtils.nowToHourMinute()
         courseAdapter.updateCurrentTime(hourMinute)
+//        val next = repository.getNextDrugCourses(hourMinute)
         // TODO: how to show on ui?
     }
 
