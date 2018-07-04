@@ -36,7 +36,7 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
         // TODO: handle days of week
         val newEntries = newDataset
                 .flatMap { drugCourse ->
-                    drugCourse.times.map { DrugCourseEntry(drugCourse.name, drugCourse.dose, drugCourse.color, it) }
+                    drugCourse.times.map { DrugCourseEntry(drugCourse, it) }
                 }
                 .sortedWith(Comparator { a, b ->
                     HourMinuteComparator.compare(a.time, b.time)
@@ -70,7 +70,7 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
 private class DrugCourseDiffer(val oldList: List<List<DrugCourseEntry>>, val newList: List<List<DrugCourseEntry>>) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].count() == newList[newItemPosition].count()
-             && oldList[oldItemPosition].first() == newList[newItemPosition].first()
+                && oldList[oldItemPosition].first() == newList[newItemPosition].first()
     }
 
     override fun getOldListSize(): Int {
@@ -101,8 +101,9 @@ class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         itemView.readout_time.text = FormatUtils.formatHourMinute(courses.first().time)
         val container = itemView.readout_drugCourses.apply { removeAllViews() }
         val inflater = LayoutInflater.from(itemView.context)
-        for (course in courses) {
+        for (entry in courses) {
             val view = inflater.inflate(R.layout.row_drug_course, container, false)
+            val course = entry.course
             view.readout_name.text = course.name
             view.readout_dose.text = FormatUtils.formatDose(course.dose)
             view.readout_icon.setBackgroundColor(course.color)
