@@ -8,6 +8,7 @@
 /.idea/gradle.xml
 /.idea/vcs.xml
 /.idea/misc.xml
+.idea/caches
 
 .DS_Store
 .externalNativeBuild
@@ -41,4 +42,3 @@ proguard/
 
 # Android Studio Navigation editor temp files
 .navigation/
-
