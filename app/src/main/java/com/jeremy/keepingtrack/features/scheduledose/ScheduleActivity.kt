@@ -84,7 +84,7 @@ class ScheduleActivity : AppCompatActivity() {
                 Toast.makeText(this, "please add at least one time", Toast.LENGTH_SHORT).show()
             }
             else -> {
-                val saved = repository.saveDrugCourse(DrugCourse(name, dosage, color, hourMinutes, listOf(1, 2, 3, 4, 5, 6, 7)))
+                val saved = repository.saveDrugCourse(DrugCourse(name, dosage, color, hourMinutes))
                 if (saved) {
                     onBackPressed()
                 } else {
