@@ -7,11 +7,12 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
-import com.jeremy.keepingtrack.data.DrugCourse
+import com.jeremy.keepingtrack.data.Drug
 import com.jeremy.keepingtrack.data.HourMinute
 import com.jeremy.keepingtrack.data.repository.Repository
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker
 import kotlinx.android.synthetic.main.activity_schedule.*
+import timber.log.Timber
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
@@ -70,7 +71,6 @@ class ScheduleActivity : AppCompatActivity() {
         val name = input_name.editableText.toString()
         val dosage = if (doseString.isBlank()) -1f else doseString.toFloat()
         val hourMinutes = adapter.getData()
-        // TODO: add day of week selection
 
         when {
             name.isBlank() -> {
@@ -83,12 +83,16 @@ class ScheduleActivity : AppCompatActivity() {
                 Toast.makeText(this, "please add at least one time", Toast.LENGTH_SHORT).show()
             }
             else -> {
-                val saved = repository.saveDrugCourse(DrugCourse(name, dosage, color, hourMinutes))
-                if (saved) {
-                    onBackPressed()
-                } else {
-                    Toast.makeText(this, "couldn't save - maybe this already exists?", Toast.LENGTH_SHORT).show()
-                }
+                repository
+                        .saveDrugCourse(Drug(null, name, dosage, color), hourMinutes)
+                        .subscribe(
+                                {
+                                    onBackPressed()
+                                },
+                                {
+                                    Timber.e(it)
+                                    Toast.makeText(this, "couldn't save - maybe this already exists?", Toast.LENGTH_SHORT).show()
+                                })
             }
         }
     }

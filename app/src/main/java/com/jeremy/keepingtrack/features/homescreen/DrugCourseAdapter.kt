@@ -7,10 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.jeremy.keepingtrack.FormatUtils
 import com.jeremy.keepingtrack.R
-import com.jeremy.keepingtrack.data.DrugCourse
-import com.jeremy.keepingtrack.data.HourMinute
-import com.jeremy.keepingtrack.data.HourMinuteComparator
-import com.jeremy.keepingtrack.data.HourMinuteOffsetComparator
+import com.jeremy.keepingtrack.data.*
 import kotlinx.android.synthetic.main.row_drug_course.view.*
 import kotlinx.android.synthetic.main.row_planned_dose.view.*
 
@@ -32,11 +29,11 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
         holder.setData(dataset[position])
     }
 
-    fun updateData(hourMinute: HourMinute, newDataset: List<DrugCourse>) {
+    fun updateData(hourMinute: HourMinute, newDataset: List<DrugWithTimes>) {
         // TODO: handle days of week
         val newEntries = newDataset
-                .flatMap { drugCourse ->
-                    drugCourse.times.map { DrugCourseEntry(drugCourse, it) }
+                .flatMap { drugWithTimes ->
+                    drugWithTimes.times.map { DrugCourseEntry(drugWithTimes.toDrug(), it) }
                 }
                 .sortedWith(Comparator { a, b ->
                     HourMinuteComparator.compare(a.time, b.time)
@@ -112,4 +109,4 @@ class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 }
 
-data class DrugCourseEntry(val course: DrugCourse, val time: HourMinute)
+data class DrugCourseEntry(val course: Drug, val time: HourMinute)

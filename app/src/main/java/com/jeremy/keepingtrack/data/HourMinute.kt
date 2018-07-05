@@ -9,6 +9,12 @@ data class HourMinute(val hour: Int, val minute: Int) : Serializable {
         return HourMinute(totalMinuteDelta / 60, totalMinuteDelta % 60)
     }
 
+    fun deltaTo(otherHour: Int, otherMinute: Int): HourMinute {
+        val hourDelta = otherHour - hour
+        val totalMinuteDelta = hourDelta * 60 + otherMinute - minute
+        return HourMinute(totalMinuteDelta / 60, totalMinuteDelta % 60)
+    }
+
     fun isPositive(): Boolean {
         return hour >= 0 && minute >= 0
     }

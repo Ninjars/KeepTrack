@@ -1,7 +1,11 @@
 package com.jeremy.keepingtrack.data
 
-import java.io.Serializable
+data class Drug(val drugId: Long?, val name: String, val dose: Float, val color: Int)
 
-data class DrugCourse(val name: String, val dose: Float, val color: Int, val times: List<HourMinute>) : Serializable
+data class DrugWithTimes(val drugId: Long?, val name: String, val dose: Float, val color: Int, val times: List<HourMinute>) {
+    fun toDrug(): Drug {
+        return Drug(drugId, name, dose, color)
+    }
+}
 
-data class ScheduledSlot(val time: HourMinute, val courses: List<DrugCourse>)
+data class TimeSlotDrugs(val time: HourMinute, val drugs: List<Drug>)

@@ -16,15 +16,15 @@ class AlarmReceiver : BroadcastReceiver() {
             intent.action == "android.intent.action.BOOT_COMPLETED" -> {
                 // TODO: inject dependencies
                 val now = TimeUtils.nowToHourMinute()
-                Environment.repository.getNextDrugCourses(now)
-                        .firstOrError()
-                        .subscribe(
-                                {
-                                    ReminderUtils.setNextAlarm(context, it.time)
-                                },
-                                {
-                                    Timber.e("failed to get next drug course")
-                                })
+//                Environment.repository.getNextTimeSlot(now)
+//                        .firstOrError()
+//                        .subscribe(
+//                                {
+//                                    ReminderUtils.setNextAlarm(context, it.time)
+//                                },
+//                                {
+//                                    Timber.e("failed to get next drug course")
+//                                })
 
 
             }
