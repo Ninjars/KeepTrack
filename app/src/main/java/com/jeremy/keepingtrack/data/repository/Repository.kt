@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
 interface Repository {
     fun saveDrugCourse(drug: Drug, times: List<HourMinute>): Single<Long>
     fun getAllDrugCourses(): Flowable<List<DrugWithTimes>>
-    fun getAllTimeSlotDrugs(): Flowable<List<TimeSlotDrugs>>
+    fun getAllTimeSlotDrugs(hourMinute: HourMinute): Maybe<List<TimeSlotDrugs>>
     fun getNextTimeSlotDrugs(hourMinute: HourMinute): Maybe<TimeSlotDrugs>
 }
 
@@ -36,33 +36,8 @@ class RoomRepository(context: Context) : Repository {
                             it.drugId
                         }
                     }
-                    database.DrugTimeJoinDao().deleteAllForDrug(id)
-                    val timeSlots = times.map {
-                        TimeSlotDb(hour = it.hour, minute = it.minute)
-                    }
-                    database.TimeSlotDao().upsert(timeSlots)
-                    val timeSlotIds = times.map {
-                        database.TimeSlotDao().getMatchingImmediate(it.hour, it.minute).id
-                    }
-                    val joinEntries = timeSlotIds.map {
-                        DrugTimeJoin(id, it)
-                    }
-                    database.DrugTimeJoinDao().insert(joinEntries)
+                    database.DrugTimeJoinDao().createOrUpdate(database, id, times)
                     id
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    override fun getAllTimeSlotDrugs(): Flowable<List<TimeSlotDrugs>> {
-        return database.TimeSlotDao().getAll()
-                .map {
-                    it.map {
-                        val drugs = it.drugs.map {
-                            Drug(it.id, it.name, it.dose, it.color)
-                        }
-                        TimeSlotDrugs(HourMinute(it.timeSlot.hour, it.timeSlot.minute), drugs)
-                    }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -82,19 +57,41 @@ class RoomRepository(context: Context) : Repository {
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getNextTimeSlotDrugs(hourMinute: HourMinute): Maybe<TimeSlotDrugs> {
-        return database.TimeSlotDao()
-                .getAll()
-                .map {
-                    it.sortedWith(TimeSlotModelComparator(hourMinute))
-                }
-                .flatMapIterable { it }
-                .firstElement()
-                .map {
-                    TimeSlotDrugs(HourMinute(it.timeSlot.hour, it.timeSlot.minute), it.drugs.map { Drug(it.id, it.name, it.dose, it.color) })
+    override fun getAllTimeSlotDrugs(hourMinute: HourMinute): Maybe<List<TimeSlotDrugs>> {
+        return Single.just(database)
+                .flatMapMaybe {
+                    it.DrugTimeJoinDao()
+                            .getAllTimeSlotsPopulated(it)
+                            .map {
+                                it.sortedWith(TimeSlotModelComparator(hourMinute))
+                            }
+                            .map {
+                                it.map {
+                                    val drugs = it.drugs.map {
+                                        Drug(it.id, it.name, it.dose, it.color)
+                                    }
+                                    TimeSlotDrugs(HourMinute(it.timeSlot.hour, it.timeSlot.minute), drugs)
+                                }
+                            }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun getNextTimeSlotDrugs(hourMinute: HourMinute): Maybe<TimeSlotDrugs> {
+        TODO()
+//        return database.TimeSlotDao()
+//                .getAll()
+//                .map {
+//                    it.sortedWith(TimeSlotModelComparator(hourMinute))
+//                }
+//                .flatMapIterable { it }
+//                .firstElement()
+//                .map {
+//                    TimeSlotDrugs(HourMinute(it.timeSlot.hour, it.timeSlot.minute), it.drugs.map { Drug(it.id, it.name, it.dose, it.color) })
+//                }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
 
     }
 

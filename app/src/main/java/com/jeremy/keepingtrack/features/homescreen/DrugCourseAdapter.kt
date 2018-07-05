@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.row_planned_dose.view.*
 
 class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
 
-    private val dataset: ArrayList<List<DrugCourseEntry>> = ArrayList()
+    private val dataset: ArrayList<TimeSlotDrugs> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CourseViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_planned_dose, parent, false)
@@ -26,48 +26,21 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
-        holder.setData(dataset[position])
+        val item = dataset[position]
+        holder.setData(item.time, item.drugs)
     }
 
-    fun updateData(hourMinute: HourMinute, newDataset: List<DrugWithTimes>) {
-        // TODO: handle days of week
-        val newEntries = newDataset
-                .flatMap { drugWithTimes ->
-                    drugWithTimes.times.map { DrugCourseEntry(drugWithTimes.toDrug(), it) }
-                }
-                .sortedWith(Comparator { a, b ->
-                    HourMinuteComparator.compare(a.time, b.time)
-                })
-                .groupBy {
-                    it.time
-                }
-                .toSortedMap(HourMinuteOffsetComparator(hourMinute))
-                .map { it.value }
-
-        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newEntries), true)
+    fun updateData(hourMinute: HourMinute, newDataset: List<TimeSlotDrugs>) {
+        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newDataset), true)
         dataset.clear()
-        dataset.addAll(newEntries)
-        changes.dispatchUpdatesTo(this)
-    }
-
-    fun updateCurrentTime(hourMinute: HourMinute) {
-        val sortedData = ArrayList(dataset)
-                .groupBy {
-                    it.first().time
-                }
-                .toSortedMap(HourMinuteOffsetComparator(hourMinute))
-                .flatMap { it.value }
-        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, sortedData), true)
-        dataset.clear()
-        dataset.addAll(sortedData)
+        dataset.addAll(newDataset)
         changes.dispatchUpdatesTo(this)
     }
 }
 
-private class DrugCourseDiffer(val oldList: List<List<DrugCourseEntry>>, val newList: List<List<DrugCourseEntry>>) : DiffUtil.Callback() {
+private class DrugCourseDiffer(val oldList: List<TimeSlotDrugs>, val newList: List<TimeSlotDrugs>) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].count() == newList[newItemPosition].count()
-                && oldList[oldItemPosition].first() == newList[newItemPosition].first()
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 
     override fun getOldListSize(): Int {
@@ -81,32 +54,21 @@ private class DrugCourseDiffer(val oldList: List<List<DrugCourseEntry>>, val new
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldEntry = oldList[oldItemPosition]
         val newEntry = newList[newItemPosition]
-        if (oldEntry.count() != newEntry.count()) {
-            return false
-        }
-        for (i in 0 until oldEntry.count()) {
-            if (oldEntry[i] != newEntry[i]) {
-                return false
-            }
-        }
-        return true
+        return oldEntry == newEntry
     }
 }
 
 class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    fun setData(courses: List<DrugCourseEntry>) {
-        itemView.readout_time.text = FormatUtils.formatHourMinute(courses.first().time)
+    fun setData(time: HourMinute, drugs: List<Drug>) {
+        itemView.readout_time.text = FormatUtils.formatHourMinute(time)
         val container = itemView.readout_drugCourses.apply { removeAllViews() }
         val inflater = LayoutInflater.from(itemView.context)
-        for (entry in courses) {
+        for (drug in drugs) {
             val view = inflater.inflate(R.layout.row_drug_course, container, false)
-            val course = entry.course
-            view.readout_name.text = course.name
-            view.readout_dose.text = FormatUtils.formatDose(course.dose)
-            view.readout_icon.setBackgroundColor(course.color)
+            view.readout_name.text = drug.name
+            view.readout_dose.text = FormatUtils.formatDose(drug.dose)
+            view.readout_icon.setBackgroundColor(drug.color)
             container.addView(view)
         }
     }
 }
-
-data class DrugCourseEntry(val course: Drug, val time: HourMinute)

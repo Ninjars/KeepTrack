@@ -57,15 +57,12 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        disposables.add(repository.getAllDrugCourses()
-                .subscribe {
-                    courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
-                })
 
+        updateAdapterData()
         disposables.add(Observable.interval(30, TimeUnit.SECONDS)
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { refreshNextDose() })
+                .subscribe { updateAdapterData() })
     }
 
     override fun onPause() {
@@ -73,11 +70,11 @@ class HomeActivity : AppCompatActivity() {
         super.onPause()
     }
 
-    private fun refreshNextDose() {
-        val hourMinute = TimeUtils.nowToHourMinute()
-        courseAdapter.updateCurrentTime(hourMinute)
-//        val next = repository.getNextDrugCourses(hourMinute)
-        // TODO: how to show on ui?
+    private fun updateAdapterData() {
+        disposables.add(repository.getAllTimeSlotDrugs(TimeUtils.nowToHourMinute())
+                .subscribe {
+                    courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
+                })
     }
 
 }
