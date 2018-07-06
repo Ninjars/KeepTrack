@@ -25,20 +25,12 @@
         app:layout_constraintLeft_toRightOf="@id/readout_icon"
         app:layout_constraintRight_toLeftOf="@+id/button_checked"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintVertical_bias="0.5"
         tools:text="Name" />
 
-    <TextView
-        android:id="@+id/readout_dose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_medium"
-        tools:text="2"
-        app:layout_constraintLeft_toRightOf="@id/readout_icon"
-        app:layout_constraintTop_toBottomOf="@id/readout_name"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <!-- todo: optional checkmake -->
+    <!-- todo: optional checkmark -->
     <ImageButton
         android:id="@+id/button_checked"
         android:layout_width="wrap_content"

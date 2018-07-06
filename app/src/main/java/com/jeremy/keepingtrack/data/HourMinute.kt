@@ -1,8 +1,11 @@
 package com.jeremy.keepingtrack.data
 
 import java.io.Serializable
+import java.text.DecimalFormat
 
 data class HourMinute(val hour: Int, val minute: Int) : Serializable {
+    private val timeFormat = DecimalFormat("00")
+
     fun deltaTo(other: HourMinute): HourMinute {
         val hourDelta = other.hour - hour
         val totalMinuteDelta = hourDelta * 60 + other.minute - minute
@@ -15,6 +18,20 @@ data class HourMinute(val hour: Int, val minute: Int) : Serializable {
         return HourMinute(totalMinuteDelta / 60, totalMinuteDelta % 60)
     }
 
+    fun increment(hour: Int, minute: Int): HourMinute {
+        val minutesSum = this.minute + minute
+        val hourFromMinutes = minutesSum / 60
+        val hourSum = (this.hour + hour + hourFromMinutes) % 24
+        return HourMinute(hourSum, minutesSum % 60)
+    }
+
+    fun increment(value: HourMinute): HourMinute {
+        val minutesSum = value.minute + minute
+        val hourFromMinutes = minutesSum / 60
+        val hourSum = value.hour + hourFromMinutes % 24
+        return HourMinute(hourSum, minutesSum % 60)
+    }
+
     fun isPositive(): Boolean {
         return hour >= 0 && minute >= 0
     }
@@ -25,6 +42,10 @@ data class HourMinute(val hour: Int, val minute: Int) : Serializable {
             hour == other.hour && minute < other.minute -> true
             else -> false
         }
+    }
+
+    override fun toString(): String {
+        return "${timeFormat.format(hour)}:${timeFormat.format(minute)}"
     }
 }
 

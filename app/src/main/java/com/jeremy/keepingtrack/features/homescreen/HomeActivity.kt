@@ -10,7 +10,7 @@ import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.TimeUtils
 import com.jeremy.keepingtrack.data.repository.Repository
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -58,23 +58,17 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        updateAdapterData()
-        disposables.add(Observable.interval(30, TimeUnit.SECONDS)
+        disposables.add(repository.getAllDrugCourses()
+                .subscribe { courseAdapter.updateData(TimeUtils.nowToHourMinute(), it) })
+
+        disposables.add(courseAdapter.updateTime(Flowable.interval(30, TimeUnit.SECONDS)
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { updateAdapterData() })
+                .map { TimeUtils.nowToHourMinute() }))
     }
 
     override fun onPause() {
         disposables.clear()
         super.onPause()
     }
-
-    private fun updateAdapterData() {
-        disposables.add(repository.getAllTimeSlotDrugs(TimeUtils.nowToHourMinute())
-                .subscribe {
-                    courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
-                })
-    }
-
 }

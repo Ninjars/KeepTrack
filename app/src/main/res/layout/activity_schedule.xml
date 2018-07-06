@@ -13,67 +13,110 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
-        android:hint="Name"
+        android:hint="@string/hint_name"
         android:inputType="text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/input_dose"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_medium"
-        android:hint="How large is each dose?"
-        android:inputType="numberDecimal"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_name" />
-
-    <Button
-        android:id="@+id/button_addTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_medium"
-        android:text="add time"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_dose" />
-
     <TextView
         android:id="@+id/readout_colour"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="48dp"
         android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginRight="@dimen/margin_medium"
-        android:text="Set Colour"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="@id/button_addTime"
-        app:layout_constraintLeft_toRightOf="@id/button_addTime"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/button_addTime" />
-
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/margin_medium"
-        app:layout_constraintBottom_toTopOf="@id/button_confirm"
+        android:text="@string/button_colour"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_addTime">
+        app:layout_constraintTop_toBottomOf="@id/input_name"
+        tools:background="@color/colorAccent" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/readout_times"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
-    </ScrollView>
+    <TextView
+        android:id="@+id/text_doses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/doses"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/input_dose"
+        app:layout_constraintBottom_toBottomOf="@+id/input_dose"/>
+
+
+    <com.shawnlin.numberpicker.NumberPicker
+        android:id="@+id/input_dose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/text_doses"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/readout_colour"
+        app:layout_constraintBottom_toTopOf="@+id/text_first"
+        app:layout_constraintHorizontal_bias="1"
+
+        app:np_dividerColor="@color/colorAccent"
+        app:np_fadingEdgeEnabled="true"
+        app:np_max="12"
+        app:np_min="1"
+        app:np_orientation="horizontal"
+        app:np_scrollerEnabled="true"
+        app:np_selectedTextColor="@color/colorPrimaryText"
+        app:np_selectedTextSize="@dimen/selected_text_size"
+        app:np_textColor="@color/colorSecondaryText"
+        app:np_textSize="@dimen/text_size"
+        app:np_value="2" />
+
+    <TextView
+        android:id="@+id/text_first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/first_dose"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input_dose"
+        app:layout_constraintBottom_toTopOf="@+id/text_interval"/>
+
+    <Button
+        android:id="@+id/button_firstDose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_medium"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_first"
+        app:layout_constraintLeft_toRightOf="@id/text_first"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="07:00" />
+
+    <TextView
+        android:id="@+id/text_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:text="@string/dose_interval"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_first"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/button_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_medium"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_interval"
+        app:layout_constraintLeft_toRightOf="@id/text_interval"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="02:00" />
 
     <Button
         android:id="@+id/button_confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_medium"
-        android:text="confirm"
+        android:text="@string/button_confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

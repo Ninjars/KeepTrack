@@ -16,10 +16,10 @@ import timber.log.Timber
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
-
-    private lateinit var adapter: ScheduledTimingsAdapter
     private lateinit var repository: Repository
     private var color: Int
+    private var startTime: HourMinute = HourMinute(7, 0)
+    private var interval: HourMinute = HourMinute(3, 0)
 
     init {
         val rnd = Random()
@@ -31,16 +31,27 @@ class ScheduleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_schedule)
         repository = Environment.repository
 
-        adapter = ScheduledTimingsAdapter()
-        readout_times.adapter = adapter
+        updateStartTime(startTime)
+        updateEndTime(interval)
 
-        button_addTime.setOnClickListener {
+        button_firstDose.setOnClickListener {
             TimePickerDialog(
                     it.context,
-                    { _, hourOfDay, minute -> adapter.addItem(HourMinute(hourOfDay, minute)) },
-                    7, 0, true)
+                    { _, hourOfDay, minute -> updateStartTime(HourMinute(hourOfDay, minute)) },
+                    startTime.hour, startTime.minute, true)
                     .apply {
-                        setTitle("Select Time")
+                        setTitle(getString(R.string.title_first_dose))
+                        show()
+                    }
+        }
+
+        button_interval.setOnClickListener {
+            TimePickerDialog(
+                    it.context,
+                    { _, hourOfDay, minute -> updateEndTime(HourMinute(hourOfDay, minute)) },
+                    interval.hour, interval.minute, true)
+                    .apply {
+                        setTitle(R.string.title_last_dose)
                         show()
                     }
         }
@@ -60,31 +71,32 @@ class ScheduleActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateStartTime(hourMinute: HourMinute) {
+        startTime = hourMinute
+        button_firstDose.text = hourMinute.toString()
+    }
+
+    private fun updateEndTime(hourMinute: HourMinute) {
+        interval = hourMinute
+        button_interval.text = hourMinute.toString()
+    }
+
     private fun updateColorSelection(color: Int) {
         this.color = color
         readout_colour.setBackgroundColor(color)
     }
 
     private fun onConfirm() {
-        val doseString = input_dose.editableText.toString()
-
         val name = input_name.editableText.toString()
-        val dosage = if (doseString.isBlank()) -1f else doseString.toFloat()
-        val hourMinutes = adapter.getData()
+        val doses = input_dose.value
 
         when {
             name.isBlank() -> {
                 Toast.makeText(this, "please add a name", Toast.LENGTH_SHORT).show()
             }
-            dosage <= 0 -> {
-                Toast.makeText(this, "please add a dosage", Toast.LENGTH_SHORT).show()
-            }
-            hourMinutes.isEmpty() -> {
-                Toast.makeText(this, "please add at least one time", Toast.LENGTH_SHORT).show()
-            }
             else -> {
                 repository
-                        .saveDrugCourse(Drug(null, name, dosage, color), hourMinutes)
+                        .saveDrug(Drug(null, name, color, doses, startTime, interval))
                         .subscribe(
                                 {
                                     onBackPressed()

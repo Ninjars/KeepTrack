@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Keeping Track</string>
     <string name="action_settings">Settings</string>
+    <string name="hint_name">Drug name or reference</string>
+    <string name="button_colour">Set Colour</string>
+    <string name="doses">Doses per day:</string>
+    <string name="first_dose">First dose of the day at:</string>
+    <string name="title_first_dose">Select Time of First Dose</string>
+    <string name="dose_interval">Time between doses:</string>
+    <string name="title_last_dose">Time Between Doses</string>
+    <string name="button_confirm">confirm</string>
 </resources>
