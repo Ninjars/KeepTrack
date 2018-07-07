@@ -2,7 +2,10 @@ package com.jeremy.keepingtrack.data.repository
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.jeremy.keepingtrack.TimeUtils
 import com.jeremy.keepingtrack.data.Drug
+import com.jeremy.keepingtrack.data.HourMinuteOffsetComparator
+import com.jeremy.keepingtrack.data.TimeSlotDrugs
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,6 +15,7 @@ interface Repository {
     fun saveDrug(drug: Drug): Single<Long>
     fun updateDrug(drug: Drug)
     fun getAllDrugCourses(): Flowable<List<Drug>>
+    fun getTimeSlotDrugs(): Flowable<List<TimeSlotDrugs>>
 }
 
 class RoomRepository(context: Context) : Repository {
@@ -45,5 +49,19 @@ class RoomRepository(context: Context) : Repository {
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun getTimeSlotDrugs(): Flowable<List<TimeSlotDrugs>> {
+        return getAllDrugCourses()
+                .map {
+                    val hourMinute = TimeUtils.nowToHourMinute()
+                    it
+                            .flatMap { drug ->
+                                drug.times.map { Pair(it, drug) }
+                            }
+                            .groupBy { it.first }
+                            .toSortedMap(HourMinuteOffsetComparator(hourMinute))
+                            .map { TimeSlotDrugs(it.key, it.value.map { it.second }) }
+                }
     }
 }

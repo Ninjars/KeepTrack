@@ -57,9 +57,10 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        disposables.add(repository.getAllDrugCourses()
-                .subscribe { courseAdapter.updateData(TimeUtils.nowToHourMinute(), it) })
+        disposables.add(repository.getTimeSlotDrugs()
+                .subscribe {
+                    courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
+                })
 
         disposables.add(courseAdapter.updateTime(Flowable.interval(30, TimeUnit.SECONDS)
                 .timeInterval()

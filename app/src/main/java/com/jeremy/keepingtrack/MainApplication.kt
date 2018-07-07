@@ -3,7 +3,7 @@ package com.jeremy.keepingtrack
 import android.app.Application
 import timber.log.Timber
 
-class MainApplication: Application() {
+class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()

@@ -34,17 +34,10 @@ class DrugCourseAdapter : RecyclerView.Adapter<CourseViewHolder>() {
         holder.setData(item.time, item.drugs)
     }
 
-    fun updateData(hourMinute: HourMinute, newDataset: List<Drug>) {
-        val newEntries = newDataset
-                .flatMap { drug ->
-                    drug.times.map { Pair(it, drug) }
-                }
-                .groupBy { it.first }
-                .toSortedMap(HourMinuteOffsetComparator(hourMinute))
-                .map { TimeSlotDrugs(it.key, it.value.map { it.second }) }
-        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newEntries), true)
+    fun updateData(hourMinute: HourMinute, newDataset: List<TimeSlotDrugs>) {
+        val changes = DiffUtil.calculateDiff(DrugCourseDiffer(dataset, newDataset), true)
         dataset.clear()
-        dataset.addAll(newEntries)
+        dataset.addAll(newDataset)
         changes.dispatchUpdatesTo(this)
     }
 
