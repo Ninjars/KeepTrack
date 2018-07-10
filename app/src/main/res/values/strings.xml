@@ -9,4 +9,7 @@
     <string name="dose_interval">Time between doses:</string>
     <string name="title_last_dose">Time Between Doses</string>
     <string name="button_confirm">confirm</string>
+    <string name="button_take_dose">Taking now, thanks</string>
+    <string name="button_remind_dose">Remind me in an hour please</string>
+    <string name="button_reject_dose">I\'m not taking this dose</string>
 </resources>

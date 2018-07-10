@@ -9,6 +9,7 @@ import com.jeremy.keepingtrack.Environment
 import com.jeremy.keepingtrack.R
 import com.jeremy.keepingtrack.TimeUtils
 import com.jeremy.keepingtrack.data.repository.Repository
+import com.jeremy.keepingtrack.features.reminders.ReminderUtils
 import com.jeremy.keepingtrack.features.scheduledose.ScheduleActivity
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -59,6 +60,7 @@ class HomeActivity : AppCompatActivity() {
         super.onResume()
         disposables.add(repository.getTimeSlotDrugs()
                 .subscribe {
+                    ReminderUtils.setAlarms(this, it)
                     courseAdapter.updateData(TimeUtils.nowToHourMinute(), it)
                 })
 

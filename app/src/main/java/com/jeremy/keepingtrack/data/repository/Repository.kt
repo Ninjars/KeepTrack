@@ -7,6 +7,7 @@ import com.jeremy.keepingtrack.data.Drug
 import com.jeremy.keepingtrack.data.HourMinuteOffsetComparator
 import com.jeremy.keepingtrack.data.TimeSlotDrugs
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -16,6 +17,7 @@ interface Repository {
     fun updateDrug(drug: Drug)
     fun getAllDrugCourses(): Flowable<List<Drug>>
     fun getTimeSlotDrugs(): Flowable<List<TimeSlotDrugs>>
+    fun fetchDrug(id: Long): Maybe<Drug>
 }
 
 class RoomRepository(context: Context) : Repository {
@@ -63,5 +65,14 @@ class RoomRepository(context: Context) : Repository {
                             .toSortedMap(HourMinuteOffsetComparator(hourMinute))
                             .map { TimeSlotDrugs(it.key, it.value.map { it.second }) }
                 }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun fetchDrug(id: Long): Maybe<Drug> {
+        return database.drugDao().get(id)
+                .map { Drug(it.id, it.name, it.color, it.dosesPerDay, it.first, it.interval) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 }

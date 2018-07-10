@@ -4,6 +4,7 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
 import com.jeremy.keepingtrack.data.HourMinute
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 
 @Database(entities = [DrugDb::class, RecordedDoseDb::class], version = 1)
 @TypeConverters(HourMinuteConverter::class)
@@ -19,6 +20,8 @@ data class DrugDb(@PrimaryKey(autoGenerate = true) var id: Long = 0, val name: S
 abstract class DrugDao : BaseDao<DrugDb>() {
     @Query("SELECT * FROM DrugDb")
     abstract fun getAll(): Flowable<List<DrugDb>>
+    @Query("SELECT * FROM DrugDb WHERE DrugDb.id=:id LIMIT 1")
+    abstract fun get(id: Long): Maybe<DrugDb>
 }
 
 @Entity(
